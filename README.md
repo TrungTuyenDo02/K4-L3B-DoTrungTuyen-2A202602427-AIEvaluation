@@ -50,6 +50,60 @@ Chi tiết hướng dẫn theo hệ điều hành và xử lý lỗi: xem [`guid
 
 ---
 
+## Bài làm — Lệnh test, chạy pipeline và Dashboard
+
+Học viên: **Đỗ Trung Tuyến** — MSSV `2A202602427`.
+
+### 1. Kiểm tra (không cần API key)
+
+```bash
+python -m pip install -r requirements.txt
+cp template.py solution/solution.py      # đồng bộ bản nộp (hai file phải giống hệt nhau)
+pytest tests/ -v                         # kỳ vọng: 42 passed (đã làm bonus rerank_by_overlap)
+python validate_golden_dataset.py        # kỳ vọng: PASS
+```
+
+### 2. Chạy lại benchmark
+
+```bash
+python evaluate_answers.py               # artifacts/actual_answers.json -> artifacts/benchmark_results.json (không gọi API)
+python domain_assistant.py               # TỐN API: sinh lại 20 actual answers (cần .env có OPENAI_API_KEY)
+```
+
+`artifacts/` đã có sẵn kết quả của lần chạy thật, nên chỉ cần `evaluate_answers.py` để tính lại metrics.
+Chỉ chạy `domain_assistant.py` khi muốn sinh câu trả lời mới, sau đó chạy lại `evaluate_answers.py`.
+
+### 3. Bonus (Exercise 3.4 & 3.5)
+
+```bash
+python bonus/rerank_experiment.py        # 3.5: retrieval metrics trước/sau rerank_by_overlap -> artifacts/rerank_results.json
+
+# 3.4: RAGAS vs DeepEval — dùng venv riêng, TỐN API
+python -m venv .venv-bonus
+.venv-bonus/Scripts/python -m pip install -r bonus/requirements-bonus.txt   # macOS/Linux: .venv-bonus/bin/python
+.venv-bonus/Scripts/python bonus/compare_frameworks.py                      # -> artifacts/framework_comparison.json
+```
+
+### 4. Dashboard (`demo/index.html`)
+
+Dashboard đọc trực tiếp `artifacts/benchmark_results.json`, `artifacts/actual_answers.json` và
+`golden_dataset.json`. Trang không nhúng sẵn số liệu nên phải mở qua HTTP server: mở file bằng
+`file://` thì trình duyệt sẽ chặn `fetch`.
+
+- **Online (GitHub Pages):** https://trungtuyendo02.github.io/K4-L3B-DoTrungTuyen-2A202602427-AIEvaluation/demo/
+- **Local:**
+
+  ```bash
+  python -m http.server 8000             # chạy tại thư mục gốc của repo
+  # mở http://localhost:8000/demo/
+  ```
+
+- **Không có server:** mở `demo/index.html`, bấm **“Chọn file JSON”** rồi chọn cùng lúc 3 file JSON ở trên.
+
+Sau khi chạy lại `evaluate_answers.py`, tải lại trang (F5) để dashboard hiển thị số liệu mới.
+
+---
+
 ## Mục tiêu
 
 Sau bài lab này, học viên có thể:
