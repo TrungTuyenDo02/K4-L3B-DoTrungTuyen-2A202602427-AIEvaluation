@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Evaluation Dashboard</title>
+<link rel="icon" href="data:,">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* ---------- Design tokens (light) ---------- */
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f3f2ee;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #6f6d68;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --accent: #2a78d6;
+    /* status palette — fixed, never themed; always paired with label + number */
+    --good: #0ca30c;
+    --warn: #fab219;
+    --bad: #d03b3b;
+    --good-ink: #006300;
+    --warn-ink: #8a5a00;
+    --bad-ink: #b02a2a;
+    --tint: 20%;
+    /* categorical slots 1-5 (validated, adjacent order) */
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #232321;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #9a988f;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --accent: #3987e5;
+      --good-ink: #3ccf3c;
+      --warn-ink: #fab219;
+      --bad-ink: #f07070;
+      --tint: 22%;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #232321;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #9a988f;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --accent: #3987e5;
+    --good-ink: #3ccf3c;
+    --warn-ink: #fab219;
+    --bad-ink: #f07070;
+    --tint: 22%;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+    --shadow: none;
+  }
+
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html { font-size: 15px; }
+  @media (min-width: 1600px) { html { font-size: 16.5px; } }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  .num, td.metric, .kpi-value, .chip-num { font-variant-numeric: tabular-nums; }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 16px; }
+  h1, h2, h3 { margin: 0; line-height: 1.25; }
+  h2 { font-size: 1.15rem; }
+  h3 { font-size: 1rem; }
+  button, select, input { font: inherit; color: inherit; }
+  .muted { color: var(--muted); }
+  .ink-2 { color: var(--ink-2); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+  }
+  section { margin-top: 20px; }
+  .section-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 10px; }
+  .section-head p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+  /* ---------- Header ---------- */
+  header.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+  header.top .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-start; justify-content: space-between; padding-top: 18px; padding-bottom: 16px; }
+  .title-block h1 { font-size: 1.5rem; }
+  .title-block .sub { margin-top: 4px; color: var(--ink-2); }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 8px; font-size: 0.88rem; color: var(--muted); }
+  .meta b { color: var(--ink-2); font-weight: 600; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border); background: var(--surface-2);
+    padding: 7px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--axis); }
+  .btn:focus-visible, select:focus-visible, tr:focus-visible, .worst-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .source-tag { font-size: 0.82rem; color: var(--muted); }
+
+  .notice { border-left: 4px solid var(--accent); }
+  .notice code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+  .notice ol { margin: 8px 0 0; padding-left: 20px; }
+  .error-text { color: var(--bad-ink); }
+
+  /* ---------- Status badges ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.78rem; font-weight: 600; line-height: 1;
+    padding: 4px 7px; border-radius: 999px; white-space: nowrap;
+  }
+  .badge.good { color: var(--good-ink); background: color-mix(in srgb, var(--good) var(--tint), transparent); }
+  .badge.warn { color: var(--warn-ink); background: color-mix(in srgb, var(--warn) var(--tint), transparent); }
+  .badge.bad { color: var(--bad-ink); background: color-mix(in srgb, var(--bad) var(--tint), transparent); }
+  .badge.neutral { color: var(--ink-2); background: var(--surface-2); }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem; color: var(--muted); }
+
+  /* ---------- KPI cards ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .kpi { display: flex; flex-direction: column; gap: 6px; }
+  .kpi-label { font-size: 0.85rem; color: var(--ink-2); }
+  .kpi-value { font-size: 1.9rem; font-weight: 650; line-height: 1.1; }
+  .kpi-foot { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+  .kpi .bar { height: 4px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .kpi .bar span { display: block; height: 100%; border-radius: 4px; }
+
+  /* ---------- Worst 3 ---------- */
+  .worst-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 1000px) { .worst-grid { grid-template-columns: 1fr; } }
+  .worst-card { border-left: 4px solid var(--bad); cursor: pointer; display: flex; flex-direction: column; gap: 8px; }
+  .worst-card:hover { border-color: var(--axis); border-left-color: var(--bad); }
+  .worst-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .worst-rank { font-size: 0.8rem; color: var(--muted); }
+  .worst-id { font-size: 1.25rem; font-weight: 700; }
+  .worst-score { font-size: 1.5rem; font-weight: 650; }
+  .worst-q { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+  .mini-metrics { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; gap: 4px; font-size: 0.78rem; padding: 3px 7px; border-radius: 6px; }
+  .chip b { font-weight: 600; }
+  .rootcause { font-size: 0.85rem; background: var(--surface-2); border-radius: 6px; padding: 6px 8px; }
+
+  /* ---------- Charts ---------- */
+  .chart-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 12px; }
+  @media (max-width: 1000px) { .chart-grid { grid-template-columns: 1fr; } }
+  .chart-box { position: relative; height: 300px; }
+  .chart-box.tall { height: 440px; }
+  details.table-view { margin-top: 8px; font-size: 0.85rem; }
+  details.table-view summary { cursor: pointer; color: var(--ink-2); }
+  details.table-view table { margin-top: 6px; }
+  .scatter-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 1000px) { .scatter-layout { grid-template-columns: 1fr; } }
+  .quadrants { display: grid; gap: 8px; font-size: 0.88rem; align-content: start; }
+  .quadrants div { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .quadrants b { display: block; }
+
+  /* ---------- Heatmap table ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 10px; }
+  .filters label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--ink-2); }
+  select { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
+  .table-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+  th { font-size: 0.8rem; font-weight: 600; color: var(--ink-2); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th .arrow { color: var(--muted); font-size: 0.75rem; margin-left: 3px; }
+  th.num-col, td.metric { text-align: right; }
+  td.metric { font-weight: 600; min-width: 74px; }
+  td.metric.good { background: color-mix(in srgb, var(--good) var(--tint), transparent); }
+  td.metric.warn { background: color-mix(in srgb, var(--warn) var(--tint), transparent); }
+  td.metric.bad { background: color-mix(in srgb, var(--bad) var(--tint), transparent); }
+  td.metric .ico { font-size: 0.72rem; margin-right: 4px; color: var(--ink-2); font-weight: 400; }
+  td.metric.overall { border-left: 2px solid var(--axis); }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { filter: brightness(0.97); }
+  tbody tr:hover td:not(.metric) { background: var(--surface-2); filter: none; }
+  td.q { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+  td.id { font-weight: 700; white-space: nowrap; }
+  .diff { text-transform: capitalize; }
+  .table-count { font-size: 0.85rem; color: var(--muted); }
+
+  /* ---------- Detail drawer ---------- */
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 20; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 21;
+    width: min(980px, 100%); background: var(--page);
+    border-left: 1px solid var(--border); overflow-y: auto;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+  }
+  .drawer-head {
+    position: sticky; top: 0; z-index: 1; background: var(--surface);
+    border-bottom: 1px solid var(--border); padding: 14px 16px;
+    display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between;
+  }
+  .drawer-body { padding: 16px; display: grid; gap: 14px; }
+  .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+  .answer-text { white-space: pre-wrap; margin: 6px 0 0; font-size: 0.95rem; }
+  .label-sm { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+  .chunk { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
+  .chunk.is-gold { border-left: 4px solid var(--good); }
+  .chunk.is-samedoc { border-left: 4px solid var(--warn); }
+  .chunk-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 0.85rem; }
+  .chunk-head .rank { font-weight: 700; font-size: 0.95rem; }
+  .chunk p { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink-2); }
+  .chunk mark { background: color-mix(in srgb, var(--good) 30%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+  .stack { display: grid; gap: 8px; }
+  .nav-btns { display: flex; gap: 6px; }
+
+  footer { margin: 28px 0 24px; font-size: 0.82rem; color: var(--muted); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="title-block">
+      <h1>K4 Level 3B · Ngày 14 — AI Evaluation &amp; Benchmarking</h1>
+      <div class="sub">Domain: <b>OrbitTech Store Customer Support</b> · Học viên: <b>Đỗ Trung Tuyến – 2A202602427</b></div>
+      <div class="meta" id="run-meta"><span>Chưa nạp dữ liệu</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-pick" type="button">📂 Chọn file JSON</button>
+      <input type="file" id="file-input" accept=".json,application/json" multiple hidden>
+      <span class="source-tag" id="source-tag"></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="card notice" id="loader-notice" hidden>
+    <h2>Cần nạp dữ liệu benchmark</h2>
+    <p id="loader-reason" class="muted"></p>
+    <ol>
+      <li>Mở terminal ở <b>thư mục gốc repo</b> và chạy <code>python -m http.server 8000</code>, rồi mở <code>http://localhost:8000/demo/</code>.</li>
+      <li>Hoặc bấm <b>“Chọn file JSON”</b> và chọn cùng lúc 3 file: <code>artifacts/benchmark_results.json</code>, <code>artifacts/actual_answers.json</code>, <code>golden_dataset.json</code>.</li>
+    </ol>
+    <p id="loaded-files" class="muted"></p>
+  </section>
+
+  <main id="app" hidden>
+    <!-- 2. KPI cards -->
+    <section aria-labelledby="kpi-title">
+      <div class="section-head">
+        <h2 id="kpi-title">Tổng quan benchmark</h2>
+        <div class="legend-row">
+          Ngưỡng:
+          <span class="badge good">✓ Good ≥ 0.8</span>
+          <span class="badge warn">▲ Needs work 0.6–0.8</span>
+          <span class="badge bad">✕ Significant issues &lt; 0.6</span>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </section>
+
+    <!-- 7. Three lowest cases -->
+    <section aria-labelledby="worst-title">
+      <div class="section-head">
+        <h2 id="worst-title">3 case có Overall thấp nhất</h2>
+        <p>Đầu vào cho phân tích 5 Whys trong <code>reflection.md</code>. Bấm vào thẻ để xem trace.</p>
+      </div>
+      <div class="worst-grid" id="worst"></div>
+    </section>
+
+    <!-- 3. Heatmap table -->
+    <section class="card" aria-labelledby="table-title">
+      <div class="section-head">
+        <h2 id="table-title">Heatmap 20 case × metrics</h2>
+        <p>Bấm tiêu đề cột để sắp xếp, bấm một dòng để mở chi tiết.</p>
+      </div>
+      <div class="filters">
+        <label>Difficulty
+          <select id="f-diff">
+            <option value="all">Tất cả</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="adversarial">Adversarial</option>
+          </select>
+        </label>
+        <label>Failure type
+          <select id="f-fail"></select>
+        </label>
+        <button class="btn" id="f-reset" type="button">Bỏ lọc</button>
+        <span class="table-count" id="table-count"></span>
+      </div>
+      <div class="table-scroll">
+        <table id="case-table">
+          <thead><tr id="table-head"></tr></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. Distribution charts -->
+    <section class="chart-grid">
+      <div class="card">
+        <div class="section-head">
+          <h2>Phân bố failure type</h2>
+          <p id="fail-sub"></p>
+        </div>
+        <div class="chart-box"><canvas id="chart-fail" role="img" aria-label="Số case theo failure type"></canvas></div>
+        <details class="table-view"><summary>Xem dạng bảng</summary><div id="fail-table"></div></details>
+      </div>
+      <div class="card">
+        <div class="section-head">
+          <h2>Điểm trung bình theo difficulty</h2>
+          <p>Mỗi nhóm cột là một mức độ khó; số trong ngoặc ở trục là pass rate.</p>
+        </div>
+        <div class="chart-box"><canvas id="chart-diff" role="img" aria-label="Điểm trung bình 5 metrics theo difficulty"></canvas></div>
+        <details class="table-view"><summary>Xem dạng bảng</summary><div id="diff-table"></div></details>
+      </div>
+    </section>
+
+    <!-- 5. Scatter retrieval vs generation -->
+    <section class="card" aria-labelledby="scatter-title">
+      <div class="section-head">
+        <h2 id="scatter-title">Retrieval vs Generation</h2>
+        <p>X = Context Recall, Y = Faithfulness. Đường chia: Recall 0.8 (mức Good) và Faithfulness 0.5 (ngưỡng pass). Bấm vào điểm để mở chi tiết.</p>
+      </div>
+      <div class="scatter-layout">
+        <div class="chart-box tall"><canvas id="chart-scatter" role="img" aria-label="Scatter Context Recall và Faithfulness theo case"></canvas></div>
+        <div class="quadrants" id="quadrants"></div>
+      </div>
+    </section>
+
+    <footer>
+      Dữ liệu đọc trực tiếp từ <code>artifacts/benchmark_results.json</code>, <code>artifacts/actual_answers.json</code> và <code>golden_dataset.json</code>; trang không chứa số liệu nhúng sẵn.
+      Chunk được đánh dấu <b>Gold evidence</b> khi văn bản chunk chứa nguyên văn một evidence trong golden dataset (cùng <code>source_doc</code>).
+    </footer>
+  </main>
+</div>
+
+<!-- 6. Detail drawer -->
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <div class="drawer-head">
+    <div>
+      <h2 id="drawer-title"></h2>
+      <div class="legend-row" id="drawer-tags"></div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn" id="d-prev" type="button" aria-label="Case trước">←</button>
+      <button class="btn" id="d-next" type="button" aria-label="Case sau">→</button>
+      <button class="btn" id="d-close" type="button">Đóng ✕</button>
+    </div>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+"use strict";
+
+/* ===================== Constants ===================== */
+const PATHS = {
+  bench: "../artifacts/benchmark_results.json",
+  actual: "../artifacts/actual_answers.json",
+  golden: "../golden_dataset.json",
+};
+const METRICS = [
+  { key: "context_recall", label: "Ctx Recall", long: "Context Recall" },
+  { key: "context_precision", label: "Ctx Precision", long: "Context Precision" },
+  { key: "faithfulness", label: "Faithfulness", long: "Faithfulness" },
+  { key: "relevance", label: "Relevance", long: "Relevance" },
+  { key: "completeness", label: "Completeness", long: "Completeness" },
+];
+const DIFFICULTIES = ["easy", "medium", "hard", "adversarial"];
+const QUADRANT_X = 0.8;  // Context Recall "Good" boundary
+const QUADRANT_Y = 0.5;  // Faithfulness pass threshold used by run_full_eval()
+
+/* ===================== State ===================== */
+const state = {
+  raw: { bench: null, actual: null, golden: null },
+  benchModified: null,  // Last-Modified header or File.lastModified
+  source: "",
+  cases: [],
+  byId: new Map(),
+  datasetOrder: new Map(),
+  rootCauses: new Map(),
+  sort: { key: "id", dir: 1 },
+  filter: { diff: "all", fail: "all" },
+  visibleIds: [],
+  openId: null,
+  charts: {},
+};
+
+/* ===================== Helpers ===================== */
+const $ = (sel) => document.querySelector(sel);
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fmt(value, digits = 3) {
+  return value === null || value === undefined || Number.isNaN(value) ? "n/a" : Number(value).toFixed(digits);
+}
+function normalize(text) {
+  return String(text ?? "").replace(/\s+/g, " ").trim();
+}
+/** Threshold status: ≥0.8 good, 0.6–0.8 warn, <0.6 bad. */
+function status(value) {
+  if (value === null || value === undefined) return { cls: "neutral", label: "n/a", icon: "–" };
+  if (value >= 0.8) return { cls: "good", label: "Good", icon: "✓" };
+  if (value >= 0.6) return { cls: "warn", label: "Needs work", icon: "▲" };
+  return { cls: "bad", label: "Significant issues", icon: "✕" };
+}
+function badge(value) {
+  const s = status(value);
+  return `<span class="badge ${s.cls}">${s.icon} ${s.label}</span>`;
+}
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function formatDate(value) {
+  if (!value) return "không rõ";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return esc(value);
+  return date.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" });
+}
+function mean(values) {
+  const present = values.filter((v) => v !== null && v !== undefined);
+  return present.length ? present.reduce((a, b) => a + b, 0) / present.length : null;
+}
+
+/* ===================== Data loading ===================== */
+async function loadFromServer() {
+  const entries = await Promise.all(
+    Object.entries(PATHS).map(async ([key, path]) => {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+      if (key === "bench") state.benchModified = response.headers.get("Last-Modified");
+      return [key, await response.json()];
+    })
+  );
+  for (const [key, value] of entries) state.raw[key] = value;
+  state.source = "Nguồn: HTTP server (artifacts/ + golden_dataset.json)";
+}
+
+/** Identify a JSON file by its shape so the user can pick files in any order. */
+function classify(json) {
+  if (json && Array.isArray(json.results) && json.summary) return "bench";
+  if (json && Array.isArray(json.answers)) return "actual";
+  if (json && Array.isArray(json.qa_pairs)) return "golden";
+  return null;
+}
+
+async function loadFromFiles(fileList) {
+  const unknown = [];
+  for (const file of fileList) {
+    try {
+      const json = JSON.parse(await file.text());
+      const kind = classify(json);
+      if (!kind) { unknown.push(file.name); continue; }
+      state.raw[kind] = json;
+      if (kind === "bench") state.benchModified = file.lastModified;
+    } catch (error) {
+      unknown.push(`${file.name} (${error.message})`);
+    }
+  }
+  state.source = "Nguồn: file chọn thủ công";
+  return unknown;
+}
+
+/** Join benchmark results, actual-answer traces and golden records by ID. */
+function buildCases() {
+  const { bench, actual, golden } = state.raw;
+  const actualById = new Map((actual?.answers ?? []).map((a) => [a.id, a]));
+  const goldenById = new Map((golden?.qa_pairs ?? []).map((g) => [g.id, g]));
+  state.rootCauses = parseImprovementLog(bench.failure_analysis?.improvement_log ?? "");
+
+  state.cases = bench.results.map((result) => {
+    const trace = actualById.get(result.id) ?? null;
+    const gold = goldenById.get(result.id) ?? null;
+    const goldContexts = gold?.contexts ?? [];
+    const chunks = (trace?.retrieved_contexts ?? []).map((chunk, index) => {
+      const chunkText = normalize(chunk.text);
+      const matched = goldContexts.filter(
+        (g) => g.source_doc === chunk.source_doc && chunkText.includes(normalize(g.text))
+      );
+      const sameDoc = goldContexts.some((g) => g.source_doc === chunk.source_doc);
+      return { ...chunk, rank: index + 1, goldMatches: matched, sameDoc };
+    });
+    const evidence = goldContexts.map((g) => {
+      const hit = chunks.find((c) => c.goldMatches.includes(g));
+      return { ...g, retrievedRank: hit ? hit.rank : null };
+    });
+    return { ...result, trace, gold, chunks, evidence };
+  });
+  state.datasetOrder = new Map(state.cases.map((c, index) => [c.id, index]));
+  state.byId = new Map(state.cases.map((c) => [c.id, c]));
+}
+
+/** Parse rows like "| F001 (E02) | type | root cause | fix | Open |". */
+function parseImprovementLog(markdown) {
+  const map = new Map();
+  for (const line of markdown.split("\n")) {
+    const cells = line.split(/(?<!\\)\|/).map((c) => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
+    const match = cells[0]?.match(/\(([^)]+)\)/);
+    if (cells.length >= 5 && match) {
+      map.set(match[1], { failureId: cells[0], type: cells[1], rootCause: cells[2], fix: cells[3], status: cells[4] });
+    }
+  }
+  return map;
+}
+
+/* ===================== Rendering: header + KPIs ===================== */
+function renderMeta() {
+  const { actual } = state.raw;
+  const agent = actual?.agent ?? {};
+  const parts = [
+    `<span>Answers sinh lúc: <b>${formatDate(actual?.generated_at)}</b></span>`,
+    `<span>benchmark_results.json cập nhật: <b>${state.benchModified ? formatDate(state.benchModified) : "không rõ"}</b></span>`,
+    `<span>Model: <b>${esc(agent.model ?? "?")}</b> · top_k <b class="num">${esc(agent.top_k ?? "?")}</b> · prompt v<b>${esc(agent.prompt_version ?? "?")}</b></span>`,
+    `<span>Corpus: <b>${esc(actual?.corpus_id ?? "?")}</b></span>`,
+  ];
+  $("#run-meta").innerHTML = parts.join("");
+  $("#source-tag").textContent = state.source;
+}
+
+function renderKpis() {
+  const s = state.raw.bench.summary;
+  const cards = [
+    { label: "Pass rate", value: s.pass_rate, display: `${(s.pass_rate * 100).toFixed(1)}%`, foot: `${s.passed}/${s.total} case pass` },
+    { label: "Avg Context Recall", value: s.avg_context_recall, foot: "Retrieval · coverage" },
+    { label: "Avg Context Precision", value: s.avg_context_precision, foot: "Retrieval · AP@K" },
+    { label: "Avg Faithfulness", value: s.avg_faithfulness, foot: "Generation · grounded" },
+    { label: "Avg Relevance", value: s.avg_relevance, foot: "Generation · on-question" },
+    { label: "Avg Completeness", value: s.avg_completeness, foot: "Generation · vs expected" },
+  ];
+  $("#kpis").innerHTML = cards.map((card) => {
+    const st = status(card.value);
+    const width = card.value === null ? 0 : Math.max(0, Math.min(1, card.value)) * 100;
+    return `<div class="card kpi">
+      <div class="kpi-label">${card.label}</div>
+      <div class="kpi-value">${card.display ?? fmt(card.value)}</div>
+      <div class="bar" aria-hidden="true"><span style="width:${width}%;background:var(--${st.cls === "neutral" ? "axis" : st.cls})"></span></div>
+      <div class="kpi-foot">${badge(card.value)}<span>${card.foot}</span></div>
+    </div>`;
+  }).join("");
+}
+
+function metricChips(c) {
+  return METRICS.concat([{ key: "overall", label: "Overall" }]).map((m) => {
+    const st = status(c[m.key]);
+    return `<span class="chip badge ${st.cls}"><b>${m.label}</b> <span class="chip-num">${fmt(c[m.key])}</span></span>`;
+  }).join("");
+}
+
+function renderWorst() {
+  const worst = [...state.cases].sort((a, b) => a.overall - b.overall).slice(0, 3);
+  $("#worst").innerHTML = worst.map((c, index) => {
+    const rc = state.rootCauses.get(c.id);
+    return `<article class="card worst-card" tabindex="0" data-id="${esc(c.id)}" aria-label="Mở chi tiết ${esc(c.id)}">
+      <div class="worst-top">
+        <div><div class="worst-rank">#${index + 1} thấp nhất · <span class="diff">${esc(c.difficulty)}</span></div>
+          <div class="worst-id">${esc(c.id)}</div></div>
+        <div style="text-align:right"><div class="worst-score num">${fmt(c.overall)}</div>${badge(c.overall)}</div>
+      </div>
+      <p class="worst-q">${esc(c.question)}</p>
+      <div class="legend-row"><span class="badge neutral">Failure type: ${esc(c.failure_type ?? "–")}</span>
+        <span class="badge neutral">Gold evidence retrieved: <span class="num">${c.evidence.filter((e) => e.retrievedRank).length}/${c.evidence.length}</span></span></div>
+      <div class="mini-metrics">${metricChips(c)}</div>
+      ${rc ? `<div class="rootcause"><span class="label-sm">find_root_cause()</span><br>${esc(rc.rootCause)}</div>` : ""}
+    </article>`;
+  }).join("");
+  document.querySelectorAll(".worst-card").forEach((el) => {
+    el.addEventListener("click", () => openDetail(el.dataset.id));
+    el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(el.dataset.id); } });
+  });
+}
+
+/* ===================== Rendering: heatmap table ===================== */
+const COLUMNS = [
+  { key: "id", label: "ID" },
+  { key: "difficulty", label: "Difficulty" },
+  { key: "question", label: "Question" },
+  ...METRICS.map((m) => ({ key: m.key, label: m.label, metric: true })),
+  { key: "overall", label: "Overall", metric: true },
+  { key: "passed", label: "Passed" },
+  { key: "failure_type", label: "Failure type" },
+];
+
+function renderFailureFilter() {
+  const types = [...new Set(state.cases.map((c) => c.failure_type).filter(Boolean))].sort();
+  $("#f-fail").innerHTML = [
+    `<option value="all">Tất cả</option>`,
+    `<option value="__passed">Passed (không lỗi)</option>`,
+    `<option value="__failed">Mọi failure</option>`,
+    ...types.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`),
+  ].join("");
+}
+
+function renderTableHead() {
+  $("#table-head").innerHTML = COLUMNS.map((col) => {
+    const active = state.sort.key === col.key;
+    const arrow = active ? (state.sort.dir === 1 ? "▲" : "▼") : "↕";
+    const aria = active ? (state.sort.dir === 1 ? "ascending" : "descending") : "none";
+    return `<th class="sortable ${col.metric ? "num-col" : ""}" data-key="${col.key}" aria-sort="${aria}" tabindex="0" scope="col">${col.label}<span class="arrow">${arrow}</span></th>`;
+  }).join("");
+  document.querySelectorAll("#table-head th").forEach((th) => {
+    const toggle = () => {
+      const key = th.dataset.key;
+      state.sort = { key, dir: state.sort.key === key ? -state.sort.dir : 1 };
+      renderTable();
+    };
+    th.addEventListener("click", toggle);
+    th.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  });
+}
+
+function compareValues(a, b) {
+  if (a === b) return 0;
+  if (a === null || a === undefined) return 1;
+  if (b === null || b === undefined) return -1;
+  if (typeof a === "number" && typeof b === "number") return a - b;
+  if (typeof a === "boolean") return (a ? 1 : 0) - (b ? 1 : 0);
+  return String(a).localeCompare(String(b));
+}
+
+function renderTable() {
+  renderTableHead();
+  const { diff, fail } = state.filter;
+  const diffOrder = (c) => DIFFICULTIES.indexOf(c.difficulty);
+  let rows = state.cases.filter((c) =>
+    (diff === "all" || c.difficulty === diff) &&
+    (fail === "all" ||
+      (fail === "__passed" && c.passed) ||
+      (fail === "__failed" && !c.passed) ||
+      c.failure_type === fail)
+  );
+  const { key, dir } = state.sort;
+  rows = rows.sort((a, b) => {
+    // ID follows dataset order (E → M → H → A), not the alphabet.
+    const result = key === "difficulty" ? diffOrder(a) - diffOrder(b)
+      : key === "id" ? state.datasetOrder.get(a.id) - state.datasetOrder.get(b.id)
+      : compareValues(a[key], b[key]);
+    return result * dir || state.datasetOrder.get(a.id) - state.datasetOrder.get(b.id);
+  });
+  state.visibleIds = rows.map((c) => c.id);
+  $("#table-count").textContent = `Hiển thị ${rows.length}/${state.cases.length} case`;
+  $("#table-body").innerHTML = rows.map((c) => {
+    const metricCells = METRICS.concat([{ key: "overall" }]).map((m) => {
+      const st = status(c[m.key]);
+      return `<td class="metric ${st.cls} ${m.key === "overall" ? "overall" : ""}" title="${st.label}"><span class="ico" aria-hidden="true">${st.icon}</span>${fmt(c[m.key])}</td>`;
+    }).join("");
+    return `<tr tabindex="0" data-id="${esc(c.id)}">
+      <td class="id">${esc(c.id)}</td>
+      <td class="diff">${esc(c.difficulty)}</td>
+      <td class="q" title="${esc(c.question)}">${esc(c.question)}</td>
+      ${metricCells}
+      <td>${c.passed ? '<span class="badge good">✓ Yes</span>' : '<span class="badge bad">✕ No</span>'}</td>
+      <td>${esc(c.failure_type ?? "–")}</td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="${COLUMNS.length}" class="muted">Không có case nào khớp bộ lọc.</td></tr>`;
+  document.querySelectorAll("#table-body tr[data-id]").forEach((tr) => {
+    tr.addEventListener("click", () => openDetail(tr.dataset.id));
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter") openDetail(tr.dataset.id); });
+  });
+}
+
+/* ===================== Rendering: charts ===================== */
+function chartTheme() {
+  return {
+    ink: cssVar("--ink"), ink2: cssVar("--ink-2"), muted: cssVar("--muted"),
+    grid: cssVar("--grid"), axis: cssVar("--axis"), surface: cssVar("--surface"),
+    series: ["--s1", "--s2", "--s3", "--s4", "--s5"].map(cssVar),
+    good: cssVar("--good"), bad: cssVar("--bad"), surface2: cssVar("--surface-2"),
+  };
+}
+
+function baseScales(t, extra = {}) {
+  return {
+    grid: { color: t.grid, drawTicks: false },
+    border: { color: t.axis },
+    ticks: { color: t.muted, padding: 6, font: { family: "system-ui" } },
+    ...extra,
+  };
+}
+
+/** Draws a value label at the end of each bar (selective direct labels). */
+const barValueLabels = {
+  id: "barValueLabels",
+  afterDatasetsDraw(chart, _args, options) {
+    if (!options.enabled) return;
+    const { ctx } = chart;
+    ctx.save();
+    ctx.fillStyle = options.color;
+    ctx.font = "600 12px system-ui";
+    chart.data.datasets.forEach((dataset, di) => {
+      chart.getDatasetMeta(di).data.forEach((bar, i) => {
+        const value = dataset.data[i];
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "left";
+        ctx.fillText(String(value), bar.x + 6, bar.y);
+      });
+    });
+    ctx.restore();
+  },
+};
+
+function renderFailureChart(t) {
+  const counts = state.raw.bench.summary.failure_types ?? {};
+  const failed = state.cases.filter((c) => !c.passed).length;
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  $("#fail-sub").textContent = `${failed} failure / ${state.cases.length} case (nguồn: summary.failure_types)`;
+  $("#fail-table").innerHTML = `<table><thead><tr><th>Failure type</th><th class="num-col">Số case</th><th class="num-col">% failures</th><th>IDs</th></tr></thead><tbody>${
+    entries.map(([type, n]) => `<tr><td>${esc(type)}</td><td class="metric">${n}</td><td class="metric">${failed ? ((n / failed) * 100).toFixed(1) : "0.0"}%</td><td>${esc(state.cases.filter((c) => c.failure_type === type).map((c) => c.id).join(", "))}</td></tr>`).join("")
+  }</tbody></table>`;
+  state.charts.fail = new Chart($("#chart-fail"), {
+    type: "bar",
+    data: {
+      labels: entries.map(([type]) => type),
+      datasets: [{ label: "Số case", data: entries.map(([, n]) => n), backgroundColor: t.series[0], borderRadius: 4, maxBarThickness: 26 }],
+    },
+    plugins: [barValueLabels],
+    options: {
+      indexAxis: "y", maintainAspectRatio: false, animation: false,
+      layout: { padding: { right: 28 } },
+      plugins: {
+        legend: { display: false },
+        barValueLabels: { enabled: true, color: t.ink2 },
+        tooltip: { callbacks: { afterLabel: (item) => "IDs: " + state.cases.filter((c) => c.failure_type === item.label).map((c) => c.id).join(", ") } },
+      },
+      scales: {
+        x: baseScales(t, { beginAtZero: true, ticks: { color: t.muted, precision: 0, stepSize: 1 } }),
+        y: baseScales(t, { grid: { display: false }, ticks: { color: t.ink2 } }),
+      },
+    },
+  });
+}
+
+function renderDifficultyChart(t) {
+  const groups = DIFFICULTIES.map((d) => {
+    const items = state.cases.filter((c) => c.difficulty === d);
+    return { d, items, passed: items.filter((c) => c.passed).length };
+  }).filter((g) => g.items.length);
+  const labels = groups.map((g) => `${g.d} (${g.passed}/${g.items.length} pass)`);
+  const datasets = METRICS.map((m, i) => ({
+    label: m.long,
+    data: groups.map((g) => mean(g.items.map((c) => c[m.key]))),
+    backgroundColor: t.series[i],
+    borderRadius: 4,
+    borderColor: t.surface,
+    borderWidth: { left: 1, right: 1 },
+    maxBarThickness: 16,
+  }));
+  $("#diff-table").innerHTML = `<table><thead><tr><th>Difficulty</th>${METRICS.map((m) => `<th class="num-col">${m.label}</th>`).join("")}<th class="num-col">Overall</th><th class="num-col">Pass</th></tr></thead><tbody>${
+    groups.map((g) => `<tr><td class="diff">${esc(g.d)}</td>${METRICS.map((m) => `<td class="metric">${fmt(mean(g.items.map((c) => c[m.key])))}</td>`).join("")}<td class="metric">${fmt(mean(g.items.map((c) => c.overall)))}</td><td class="metric">${g.passed}/${g.items.length}</td></tr>`).join("")
+  }</tbody></table>`;
+  state.charts.diff = new Chart($("#chart-diff"), {
+    type: "bar",
+    data: { labels, datasets },
+    options: {
+      maintainAspectRatio: false, animation: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom", labels: { color: t.ink2, boxWidth: 12, boxHeight: 12, useBorderRadius: true, borderRadius: 3 } },
+        tooltip: { callbacks: { label: (item) => `${item.dataset.label}: ${fmt(item.raw)} (${status(item.raw).label})` } },
+      },
+      scales: {
+        x: baseScales(t, { grid: { display: false }, ticks: { color: t.ink2 } }),
+        y: baseScales(t, { min: 0, max: 1, ticks: { color: t.muted, stepSize: 0.2 } }),
+      },
+    },
+  });
+}
+
+/** Quadrant lines, shading and corner captions for the scatter plot. */
+const quadrantPlugin = {
+  id: "quadrants",
+  beforeDatasetsDraw(chart, _args, options) {
+    const { ctx, chartArea: area, scales: { x, y } } = chart;
+    const qx = x.getPixelForValue(QUADRANT_X);
+    const qy = y.getPixelForValue(QUADRANT_Y);
+    ctx.save();
+    ctx.fillStyle = options.shade;
+    ctx.fillRect(area.left, area.top, qx - area.left, area.bottom - area.top); // low recall
+    ctx.fillRect(qx, qy, area.right - qx, area.bottom - qy);                  // high recall, low faithfulness
+    ctx.strokeStyle = options.line;
+    ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(qx, area.top); ctx.lineTo(qx, area.bottom);
+    ctx.moveTo(area.left, qy); ctx.lineTo(area.right, qy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = options.text;
+    ctx.font = "600 12px system-ui";
+    const pad = 8;
+    ctx.textBaseline = "top"; ctx.textAlign = "left";
+    ctx.fillText("① Recall thấp, Faith cao", area.left + pad, area.top + pad);
+    ctx.textAlign = "right";
+    ctx.fillText("② Khỏe mạnh", area.right - pad, area.top + pad);
+    ctx.textBaseline = "bottom"; ctx.textAlign = "left";
+    ctx.fillText("③ Lỗi retriever", area.left + pad, area.bottom - pad);
+    ctx.textAlign = "right";
+    ctx.fillText("④ Lỗi generation (hoặc metric)", area.right - pad, area.bottom - pad);
+    ctx.restore();
+  },
+};
+
+/**
+ * Labels failed points with their case ID (selective direct labels).
+ * Lowest-overall cases are placed first; each label tries right/left/above/below
+ * and is skipped if every slot collides (tooltip + quadrant list still name it).
+ */
+const pointLabels = {
+  id: "pointLabels",
+  afterDatasetsDraw(chart, _args, options) {
+    const { ctx, chartArea: area } = chart;
+    ctx.save();
+    ctx.font = "600 11px system-ui";
+    ctx.fillStyle = options.color;
+    ctx.textBaseline = "middle";
+    const placed = [];
+    const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+    const points = [];
+    chart.data.datasets.forEach((dataset, di) => {
+      if (!dataset.labelPoints) return;
+      chart.getDatasetMeta(di).data.forEach((point, i) => points.push({ point, raw: dataset.data[i] }));
+    });
+    points.sort((a, b) => state.byId.get(a.raw.id).overall - state.byId.get(b.raw.id).overall);
+    for (const { point, raw } of points) {
+      const w = ctx.measureText(raw.id).width;
+      const h = 12;
+      const candidates = [
+        { x: point.x + 9, y: point.y - h / 2 },
+        { x: point.x - 9 - w, y: point.y - h / 2 },
+        { x: point.x - w / 2, y: point.y - 10 - h },
+        { x: point.x - w / 2, y: point.y + 10 },
+      ];
+      const slot = candidates.find((c) => {
+        const box = { ...c, w, h };
+        return box.x >= area.left && box.x + w <= area.right + 12 && box.y >= area.top && box.y + h <= area.bottom
+          && !placed.some((p) => overlaps(box, p));
+      });
+      if (!slot) continue;
+      placed.push({ ...slot, w, h });
+      ctx.textAlign = "left";
+      ctx.fillText(raw.id, slot.x, slot.y + h / 2);
+    }
+    ctx.restore();
+  },
+};
+
+function renderScatter(t) {
+  const toPoint = (c) => ({ x: c.context_recall, y: c.faithfulness, id: c.id });
+  const plotted = state.cases.filter((c) => c.context_recall !== null && c.context_recall !== undefined);
+  const passed = plotted.filter((c) => c.passed).map(toPoint);
+  const failed = plotted.filter((c) => !c.passed).map(toPoint);
+  state.charts.scatter = new Chart($("#chart-scatter"), {
+    type: "scatter",
+    data: {
+      datasets: [
+        { label: "Passed", data: passed, backgroundColor: t.good, borderColor: t.surface, borderWidth: 2, pointRadius: 6, pointHoverRadius: 8, pointStyle: "circle", clip: false },
+        { label: "Failed (có nhãn ID)", data: failed, backgroundColor: t.bad, borderColor: t.surface, borderWidth: 2, pointRadius: 6.5, pointHoverRadius: 9, pointStyle: "rectRot", clip: false, labelPoints: true },
+      ],
+    },
+    plugins: [quadrantPlugin, pointLabels],
+    options: {
+      maintainAspectRatio: false, animation: false,
+      layout: { padding: { top: 6, right: 14 } },
+      onClick: (_event, elements, chart) => {
+        if (!elements.length) return;
+        const { datasetIndex, index } = elements[0];
+        openDetail(chart.data.datasets[datasetIndex].data[index].id);
+      },
+      onHover: (event, elements) => { event.native.target.style.cursor = elements.length ? "pointer" : "default"; },
+      plugins: {
+        quadrants: { shade: t.surface2, line: t.axis, text: t.muted },
+        pointLabels: { color: t.ink2 },
+        legend: { position: "bottom", labels: { color: t.ink2, usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].raw.id,
+            label: (item) => {
+              const c = state.byId.get(item.raw.id);
+              return [`Context Recall: ${fmt(c.context_recall)}`, `Faithfulness: ${fmt(c.faithfulness)}`, `Overall: ${fmt(c.overall)} · ${c.passed ? "Passed" : "Failed: " + (c.failure_type ?? "–")}`];
+            },
+          },
+        },
+      },
+      scales: {
+        x: baseScales(t, { min: 0, max: 1, title: { display: true, text: "Context Recall (retrieval)", color: t.ink2 }, ticks: { color: t.muted, stepSize: 0.2 } }),
+        y: baseScales(t, { min: 0, max: 1, title: { display: true, text: "Faithfulness (generation)", color: t.ink2 }, ticks: { color: t.muted, stepSize: 0.2 } }),
+      },
+    },
+  });
+
+  const inQuadrant = (fn) => plotted.filter(fn).map((c) => c.id).join(", ") || "–";
+  const highX = (c) => c.context_recall >= QUADRANT_X;
+  const highY = (c) => c.faithfulness >= QUADRANT_Y;
+  $("#quadrants").innerHTML = `
+    <div><b>② Khỏe mạnh — Recall ≥ ${QUADRANT_X}, Faith ≥ ${QUADRANT_Y}</b>Retriever lấy đủ evidence và answer bám context. Vẫn cần đọc trace: word-overlap không bắt được lỗi logic/số.<br><span class="muted">Case: ${esc(inQuadrant((c) => highX(c) && highY(c)))}</span></div>
+    <div><b>④ Recall cao, Faith thấp → lỗi generation</b>Evidence đã có nhưng answer thêm claim ngoài gold context, chọn nhầm rule, hoặc diễn đạt khác làm metric phạt.<br><span class="muted">Case: ${esc(inQuadrant((c) => highX(c) && !highY(c)))}</span></div>
+    <div><b>③ Recall thấp, Faith thấp → lỗi retriever</b>Thiếu evidence nên answer thiếu ý hoặc phải từ chối. Sửa retrieval trước khi sửa prompt.<br><span class="muted">Case: ${esc(inQuadrant((c) => !highX(c) && !highY(c)))}</span></div>
+    <div><b>① Recall thấp, Faith cao</b>Answer bám phần evidence ít ỏi có được; dễ thiếu điều kiện. Kiểm tra Completeness.<br><span class="muted">Case: ${esc(inQuadrant((c) => !highX(c) && highY(c)))}</span></div>`;
+}
+
+function renderCharts() {
+  if (typeof Chart === "undefined") {
+    ["#chart-fail", "#chart-diff", "#chart-scatter"].forEach((sel) => {
+      $(sel).parentElement.innerHTML = '<p class="error-text">Không tải được Chart.js từ cdnjs (cần Internet). Xem dạng bảng bên dưới.</p>';
+    });
+    return;
+  }
+  Object.values(state.charts).forEach((chart) => chart.destroy());
+  state.charts = {};
+  const t = chartTheme();
+  Chart.defaults.font.family = "system-ui, -apple-system, 'Segoe UI', sans-serif";
+  Chart.defaults.color = t.ink2;
+  renderFailureChart(t);
+  renderDifficultyChart(t);
+  renderScatter(t);
+}
+
+/* ===================== Detail drawer ===================== */
+function highlightEvidence(text, matches) {
+  let html = esc(text);
+  for (const m of matches) {
+    const needle = esc(m.text);
+    const index = html.indexOf(needle);
+    if (index >= 0) html = html.slice(0, index) + "<mark>" + needle + "</mark>" + html.slice(index + needle.length);
+  }
+  return html;
+}
+
+function openDetail(id) {
+  const c = state.byId.get(id);
+  if (!c) return;
+  state.openId = id;
+  const rc = state.rootCauses.get(id);
+  $("#drawer-title").textContent = `${c.id} · ${c.difficulty}`;
+  $("#drawer-tags").innerHTML = [
+    c.passed ? '<span class="badge good">✓ Passed</span>' : `<span class="badge bad">✕ Failed · ${esc(c.failure_type ?? "–")}</span>`,
+    `<span class="badge neutral">Overall <span class="num">${fmt(c.overall)}</span></span>`,
+    c.gold?.attack_type ? `<span class="badge neutral">attack_type: ${esc(c.gold.attack_type)}</span>` : "",
+  ].join("");
+
+  const chunks = c.chunks.map((ch) => {
+    const isGold = ch.goldMatches.length > 0;
+    const tag = isGold
+      ? `<span class="badge good">✓ Gold evidence (${ch.goldMatches.length})</span>`
+      : ch.sameDoc ? '<span class="badge warn">▲ Cùng tài liệu gold, không chứa evidence</span>' : '<span class="badge neutral">Không thuộc gold</span>';
+    return `<div class="chunk ${isGold ? "is-gold" : ch.sameDoc ? "is-samedoc" : ""}">
+      <div class="chunk-head"><span class="rank">#${ch.rank}</span><span><b>${esc(ch.chunk_id)}</b></span><span class="muted">${esc(ch.source_doc)}</span>
+        <span class="num">BM25 score: <b>${fmt(ch.score, 2)}</b></span>${tag}</div>
+      <p>${highlightEvidence(ch.text, ch.goldMatches)}</p>
+    </div>`;
+  }).join("") || '<p class="muted">Không có retrieval trace cho case này.</p>';
+
+  const evidence = c.evidence.map((e) => `<div class="chunk ${e.retrievedRank ? "is-gold" : ""}">
+      <div class="chunk-head"><b>${esc(e.source_doc)}</b>${e.retrievedRank
+        ? `<span class="badge good">✓ Có trong top-k (rank ${e.retrievedRank})</span>`
+        : '<span class="badge bad">✕ Không được retrieve</span>'}</div>
+      <p>${esc(e.text)}</p></div>`).join("") || '<p class="muted">Thiếu golden_dataset.json — không có gold evidence.</p>';
+
+  $("#drawer-body").innerHTML = `
+    <div class="card"><div class="label-sm">Metrics</div><div class="mini-metrics" style="margin-top:6px">${metricChips(c)}</div>
+      ${rc ? `<p style="margin:10px 0 0"><span class="label-sm">find_root_cause()</span><br>${esc(rc.rootCause)}<br><span class="muted">Gợi ý trong improvement log: ${esc(rc.fix)}</span></p>` : ""}</div>
+    <div class="card"><div class="label-sm">Question</div><p class="answer-text">${esc(c.question)}</p></div>
+    <div class="two-col">
+      <div class="card"><div class="label-sm">Expected answer (golden)</div><p class="answer-text">${esc(c.gold?.expected_answer ?? "Thiếu golden_dataset.json")}</p></div>
+      <div class="card"><div class="label-sm">Actual answer (${esc(state.raw.actual?.agent?.model ?? "RAG")})</div><p class="answer-text">${esc(c.actual_answer)}</p></div>
+    </div>
+    <div><h3>Gold evidence (${c.evidence.filter((e) => e.retrievedRank).length}/${c.evidence.length} được retrieve)</h3><div class="stack" style="margin-top:8px">${evidence}</div></div>
+    <div><h3>Retrieved chunks theo rank (${c.chunks.length})</h3><div class="stack" style="margin-top:8px">${chunks}</div></div>`;
+
+  $("#scrim").hidden = false;
+  $("#drawer").hidden = false;
+  $("#drawer").scrollTop = 0;
+  $("#d-close").focus();
+}
+
+function closeDetail() {
+  $("#scrim").hidden = true;
+  $("#drawer").hidden = true;
+  const row = document.querySelector(`#table-body tr[data-id="${CSS.escape(state.openId ?? "")}"]`);
+  state.openId = null;
+  row?.focus();
+}
+
+function stepDetail(delta) {
+  const order = state.visibleIds.length ? state.visibleIds : state.cases.map((c) => c.id);
+  const index = order.indexOf(state.openId);
+  const next = order[(index + delta + order.length) % order.length];
+  if (next) openDetail(next);
+}
+
+/* ===================== Boot ===================== */
+function renderAll() {
+  buildCases();
+  $("#loader-notice").hidden = true;
+  $("#app").hidden = false;
+  renderMeta();
+  renderKpis();
+  renderWorst();
+  renderFailureFilter();
+  renderTable();
+  renderCharts();
+}
+
+function showLoader(reason) {
+  $("#loader-notice").hidden = false;
+  $("#loader-reason").textContent = reason;
+  const have = Object.entries(state.raw).filter(([, v]) => v).map(([k]) => k);
+  $("#loaded-files").textContent = have.length ? `Đã nạp: ${have.join(", ")}` : "";
+}
+
+function wireEvents() {
+  $("#btn-pick").addEventListener("click", () => $("#file-input").click());
+  $("#file-input").addEventListener("change", async (event) => {
+    const unknown = await loadFromFiles(event.target.files);
+    event.target.value = "";
+    const missing = ["bench", "actual"].filter((k) => !state.raw[k]);
+    if (missing.length) {
+      showLoader(`Còn thiếu: ${missing.map((k) => PATHS[k].replace("../", "")).join(", ")}.` + (unknown.length ? ` Không nhận ra: ${unknown.join(", ")}.` : ""));
+      return;
+    }
+    renderAll();
+    if (!state.raw.golden) $("#source-tag").textContent += " · thiếu golden_dataset.json (không có expected answer/gold evidence)";
+  });
+  $("#f-diff").addEventListener("change", (e) => { state.filter.diff = e.target.value; renderTable(); });
+  $("#f-fail").addEventListener("change", (e) => { state.filter.fail = e.target.value; renderTable(); });
+  $("#f-reset").addEventListener("click", () => {
+    state.filter = { diff: "all", fail: "all" };
+    $("#f-diff").value = "all"; $("#f-fail").value = "all";
+    renderTable();
+  });
+  $("#d-close").addEventListener("click", closeDetail);
+  $("#scrim").addEventListener("click", closeDetail);
+  $("#d-prev").addEventListener("click", () => stepDetail(-1));
+  $("#d-next").addEventListener("click", () => stepDetail(1));
+  document.addEventListener("keydown", (e) => {
+    if ($("#drawer").hidden) return;
+    if (e.key === "Escape") closeDetail();
+    if (e.key === "ArrowLeft") stepDetail(-1);
+    if (e.key === "ArrowRight") stepDetail(1);
+  });
+  // Re-theme charts when the OS light/dark preference changes.
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (state.cases.length) renderCharts(); });
+}
+
+(async function boot() {
+  wireEvents();
+  if (location.protocol === "file:") {
+    showLoader("Trang đang mở trực tiếp từ file nên trình duyệt chặn fetch. Hãy chạy HTTP server hoặc chọn file JSON thủ công.");
+    return;
+  }
+  try {
+    await loadFromServer();
+    renderAll();
+  } catch (error) {
+    showLoader(`Không đọc được artifact qua HTTP (${error.message}).`);
+  }
+})();
+</script>
+</body>
+</html>

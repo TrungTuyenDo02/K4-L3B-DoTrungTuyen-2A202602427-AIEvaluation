@@ -1,0 +1,162 @@
+[
+  {
+    "id": "E01",
+    "recall_before": 1.0,
+    "recall_after": 1.0,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": false
+  },
+  {
+    "id": "E02",
+    "recall_before": 1.0,
+    "recall_after": 1.0,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "E03",
+    "recall_before": 1.0,
+    "recall_after": 1.0,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": false
+  },
+  {
+    "id": "E04",
+    "recall_before": 0.8461538461538461,
+    "recall_after": 0.8461538461538461,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": false
+  },
+  {
+    "id": "E05",
+    "recall_before": 0.9090909090909091,
+    "recall_after": 0.9090909090909091,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "M01",
+    "recall_before": 1.0,
+    "recall_after": 1.0,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "M02",
+    "recall_before": 0.8666666666666667,
+    "recall_after": 0.8666666666666667,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "M03",
+    "recall_before": 0.9473684210526315,
+    "recall_after": 0.9473684210526315,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "M04",
+    "recall_before": 0.967741935483871,
+    "recall_after": 0.967741935483871,
+    "precision_before": 0.8666666666666667,
+    "precision_after": 0.7555555555555555,
+    "order_changed": true
+  },
+  {
+    "id": "M05",
+    "recall_before": 0.9393939393939394,
+    "recall_after": 0.9393939393939394,
+    "precision_before": 0.7,
+    "precision_after": 0.8333333333333333,
+    "order_changed": true
+  },
+  {
+    "id": "M06",
+    "recall_before": 0.8076923076923077,
+    "recall_after": 0.8076923076923077,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "M07",
+    "recall_before": 1.0,
+    "recall_after": 1.0,
+    "precision_before": 0.9166666666666666,
+    "precision_after": 0.8666666666666667,
+    "order_changed": true
+  },
+  {
+    "id": "H01",
+    "recall_before": 0.8529411764705882,
+    "recall_after": 0.8529411764705882,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": false
+  },
+  {
+    "id": "H02",
+    "recall_before": 0.9666666666666667,
+    "recall_after": 0.9666666666666667,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": false
+  },
+  {
+    "id": "H03",
+    "recall_before": 0.6190476190476191,
+    "recall_after": 0.6190476190476191,
+    "precision_before": 0.95,
+    "precision_after": 0.95,
+    "order_changed": true
+  },
+  {
+    "id": "H04",
+    "recall_before": 0.8461538461538461,
+    "recall_after": 0.8461538461538461,
+    "precision_before": 0.7000000000000001,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "H05",
+    "recall_before": 0.9629629629629629,
+    "recall_after": 0.9629629629629629,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "A01",
+    "recall_before": 0.16,
+    "recall_after": 0.16,
+    "precision_before": 0.3333333333333333,
+    "precision_after": 0.3333333333333333,
+    "order_changed": false
+  },
+  {
+    "id": "A02",
+    "recall_before": 0.9523809523809523,
+    "recall_after": 0.9523809523809523,
+    "precision_before": 1.0,
+    "precision_after": 1.0,
+    "order_changed": true
+  },
+  {
+    "id": "A03",
+    "recall_before": 0.84,
+    "recall_after": 0.84,
+    "precision_before": 0.8041666666666667,
+    "precision_after": 0.95,
+    "order_changed": true
+  }
+]

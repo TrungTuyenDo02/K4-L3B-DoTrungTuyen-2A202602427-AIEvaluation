@@ -1,0 +1,959 @@
+{
+  "summary": {
+    "actual_answers_generated_at": "2026-10-01T03:12:46.251283+00:00",
+    "judge_model": "gpt-4o-mini",
+    "embedding_model": "text-embedding-3-small",
+    "runtime_seconds": {
+      "ragas": 461.6,
+      "deepeval": 769.8
+    },
+    "averages": {
+      "faithfulness": {
+        "lab_heuristic": 0.5692878508854241,
+        "ragas": 0.7866666666666665,
+        "deepeval": 0.873690476190476
+      },
+      "answer_relevancy": {
+        "lab_heuristic": 0.580135441212218,
+        "ragas": 0.6818948520214959,
+        "deepeval": 0.7958333333333334
+      },
+      "context_recall": {
+        "lab_heuristic": 0.8742130624608405,
+        "ragas": 0.9666666666666666,
+        "deepeval": 0.8666666666666668
+      },
+      "context_precision": {
+        "lab_heuristic": 0.9135416666666666,
+        "ragas": 0.8815277777315705,
+        "deepeval": 0.8758333333333332
+      }
+    },
+    "errors": {
+      "ragas": 0,
+      "deepeval": 0
+    }
+  },
+  "results": [
+    {
+      "id": "E01",
+      "difficulty": "easy",
+      "lab_heuristic": {
+        "faithfulness": 0.8095238095238095,
+        "answer_relevancy": 0.5384615384615384,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.7168203898258007,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about the appropriate charger for a NovaBook 14 and the implications of using a lower-wattage adapter without including any irrelevant information."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because every sentence in the expected output is directly supported by the information in the first node of the retrieval context, confirming a perfect match."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node directly addresses the question about which charger to use for the NovaBook 14, stating that 'The NovaBook 14 charges through either USB-C port with a 65 W USB-C Power Delivery adapter.' The subsequent nodes, ranked lower, discuss irrelevant topics such as warranty details, order cancellation policies, and return policies, which do not pertain to the charging specifications or the effects of using a lower-wattage adapter."
+        }
+      }
+    },
+    {
+      "id": "E02",
+      "difficulty": "easy",
+      "lab_heuristic": {
+        "faithfulness": 0.43137254901960786,
+        "answer_relevancy": 0.5,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8745652397375737,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.8333333333333334,
+          "reason": "The score is 0.83 because the actual output incorrectly implies that all active members have a standard return window of 45 days, while the retrieval context specifies that this extended window only applies under specific conditions of Return Policy version 2.0 for orders placed after September 1, 2026."
+        },
+        "answer_relevancy": {
+          "score": 0.8333333333333334,
+          "reason": "The score is 0.83 because while the response provided some relevant information about the membership, it included a statement about exclusions that did not address the cost or benefits, which are the main focus of the question."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the sentence perfectly matches the first node in the retrieval context, confirming a direct and clear attribution."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node provides a comprehensive answer to the question about OrbitPlus membership cost and benefits, stating 'OrbitPlus is an annual membership costing USD 49. Active members receive free standard shipping on eligible domestic orders, a 5% member discount on regularly priced OrbitTech accessories, and priority chat support.' The subsequent nodes, ranked lower, do not address the cost or benefits of the membership, focusing instead on unrelated topics such as activation, return policies, and repair policies, which justifies their lower ranking."
+        }
+      }
+    },
+    {
+      "id": "E03",
+      "difficulty": "easy",
+      "lab_heuristic": {
+        "faithfulness": 0.6666666666666666,
+        "answer_relevancy": 0.5555555555555556,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8732172047685979,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about standard and express domestic shipping times without any irrelevant statements."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all sentences in the expected output are directly supported by the information provided in the first node of the retrieval context."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node provides the exact information needed regarding shipping times, while the subsequent nodes, ranked lower, discuss unrelated topics such as membership benefits, diagnosis and repair times, lost packages, and tracking issues, which do not address the input question."
+        }
+      }
+    },
+    {
+      "id": "E04",
+      "difficulty": "easy",
+      "lab_heuristic": {
+        "faithfulness": 0.8333333333333334,
+        "answer_relevancy": 0.6666666666666666,
+        "context_recall": 0.8461538461538461,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.9131257975750117,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because the actual output correctly states that the PulsePhone X has a 24-month limited hardware warranty, but it fails to provide additional relevant details or context that may be necessary for a complete understanding."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about the hardware warranty for both the PulsePhone X and the AeroBuds Pro without including any irrelevant information."
+        },
+        "context_recall": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because while the first sentence about the PulsePhone X's warranty is directly supported by the node in retrieval context, the second sentence regarding the AeroBuds Pro lacks relevant information, leading to a partial match."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the relevant nodes are ranked higher than the irrelevant nodes. The first node provides a clear answer about the PulsePhone X warranty, stating that 'OrbitTech provides a 24-month limited hardware warranty for the PulsePhone X.' The second node follows with information about the AeroBuds Pro warranty, mentioning 'The AeroBuds Pro and separately purchased OrbitTech accessories have a 12-month warranty.' The irrelevant nodes, ranked third to fifth, do not address warranty durations, with the third node stating it focuses on features, the fourth discussing warranty service without specifics, and the fifth covering return policies without mentioning warranties. This clear distinction in relevance justifies the perfect score."
+        }
+      }
+    },
+    {
+      "id": "E05",
+      "difficulty": "easy",
+      "lab_heuristic": {
+        "faithfulness": 0.6923076923076923,
+        "answer_relevancy": 0.75,
+        "context_recall": 0.9090909090909091,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.9837891083805884,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999666667,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addresses the question about password and authentication code requests without any irrelevant statements."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the sentence directly matches the first node in retrieval context, confirming its accuracy and relevance."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all relevant nodes are ranked higher than the irrelevant nodes. The first node directly answers the question by stating that 'OrbitTech staff will never request a password or one-time authentication code,' while the second node reinforces this by emphasizing security rules. The irrelevant nodes, starting from the third, discuss topics unrelated to the inquiry, such as support ticket requirements, promotional codes, and smartphone specifications, which do not address the user's concern about password requests."
+        }
+      }
+    },
+    {
+      "id": "M01",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.64,
+        "answer_relevancy": 0.625,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.8,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.6241935017440194,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.99999999995,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addresses the refund process for a partial payment with a gift card and credit card, providing clear and relevant information without any irrelevant statements."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because every sentence in the expected output is directly supported by the corresponding nodes in the retrieval context, confirming the accuracy and relevance of the information provided."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all relevant nodes are ranked higher than the irrelevant nodes. The first node provides crucial information about the refund process for the gift card, stating that 'OrbitTech cannot refund cash for a gift-card-funded portion; that amount returns to a replacement gift card.' The second node confirms the timeframe for refunds, mentioning 'After inspection, refunds are issued to the original payment methods within five to seven business days.' In contrast, the third node discusses tracking, which is irrelevant, and the fourth and fifth nodes address promotional codes and card fraud, neither of which pertain to the refund process. This clear distinction in relevance justifies the perfect score."
+        }
+      }
+    },
+    {
+      "id": "M02",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.5714285714285714,
+        "answer_relevancy": 0.5294117647058824,
+        "context_recall": 0.8666666666666667,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.3333333333333333,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.7738025762300879,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.99999999995,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because the actual output states that the device costs USD 280 after the discount, which contradicts the retrieval context that specifies a minimum requirement of USD 300 for OrbitPay instalments."
+        },
+        "answer_relevancy": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because the output included incorrect information about the device's eligibility for OrbitPay instalments based on its discounted price and mentioned a minimum requirement that does not apply to the actual cost of the device."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all sentences in the expected output are directly supported by the information in node(s) in retrieval context, clearly explaining the requirements and conditions of OrbitPay instalments."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node directly addresses the eligibility for OrbitPay instalments, stating that 'OrbitPay instalments are available for eligible device purchases of at least USD 300 after discounts.' This relevance is clear and specific, while the subsequent nodes rank lower as they discuss unrelated topics such as membership benefits, delivery requirements, repair quotes, and customer responsibilities, which do not pertain to the question about OrbitPay."
+        }
+      }
+    },
+    {
+      "id": "M03",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.47619047619047616,
+        "answer_relevancy": 0.6842105263157895,
+        "context_recall": 0.9473684210526315,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8404059659908194,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.94999999997625,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about stacking discounts and using a gift card without including any irrelevant information."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first sentence in the expected output directly reflects the information provided in the first node of the retrieval context, confirming that OrbitPlus accessory discounts cannot stack with a percentage-off code and that a percentage code can be combined with a gift card."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node directly addresses the question about stacking discounts, stating that 'OrbitPlus accessory discounts cannot stack with a percentage-off code; checkout applies the larger eligible discount.' This clear and relevant information is prioritized over the subsequent nodes, which do not provide answers to the specific queries about discount stacking or gift card usage."
+        }
+      }
+    },
+    {
+      "id": "M04",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.7368421052631579,
+        "answer_relevancy": 0.7916666666666666,
+        "context_recall": 0.967741935483871,
+        "context_precision": 0.8666666666666667
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.5147449992039491,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.6999999999766667,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 0.75,
+          "reason": "The score is 0.75 because the response included a statement that contradicts the user's concern about an immediate refund, which detracted from the overall relevance of the answer."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all sentences in the expected output are directly supported by the information in the nodes of the retrieval context, specifically the first and fifth nodes, which clearly outline the policies regarding delayed packages and the options available if a carrier confirms loss."
+        },
+        "context_precision": {
+          "score": 0.7,
+          "reason": "The score is 0.70 because while the relevant nodes are present and ranked higher, there are multiple irrelevant nodes that dilute the overall precision. Specifically, the first node directly addresses the user's concern about delays, while the second node (ranked 2) discusses shipping times without relevant information, and the third node (ranked 3) focuses on return policies, which is not pertinent to the inquiry. Additionally, the fourth node (ranked 4) relates to repair timelines, further contributing to the lower score. The presence of two relevant nodes at ranks 1 and 5 helps maintain a decent score, reflecting some effective retrieval despite the irrelevant nodes."
+        }
+      }
+    },
+    {
+      "id": "M05",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.8611111111111112,
+        "answer_relevancy": 0.5384615384615384,
+        "context_recall": 0.9393939393939394,
+        "context_precision": 0.7
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.5739727384374865,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.7499999999625,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about out-of-warranty repair quotes and the implications of declining them, with no irrelevant statements present."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because every sentence in the expected output is directly supported by the information in the first node of the retrieval context, confirming a perfect alignment."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node provides a comprehensive answer regarding the repair quote process and the implications of declining it, while all subsequent nodes are irrelevant as they do not address the repair quote or its consequences. The first node's relevance ensures a perfect score, while the lower-ranked nodes fail to contribute any pertinent information."
+        }
+      }
+    },
+    {
+      "id": "M06",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.4,
+        "answer_relevancy": 0.5,
+        "context_recall": 0.8076923076923077,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8875851900132449,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.8571428571428571,
+          "reason": "The score is 0.86 because the actual output suggests canceling an order without confirming its status, contradicting the retrieval context which states that cancellation should only occur if the order is confirmed and not already packing or dispatched."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addresses the user's concern about a compromised account and provides relevant steps to take."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all sentences in the expected output are directly supported by the information in the first node of the retrieval context, providing clear and relevant guidance for the user."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node provides clear and relevant steps for a customer who suspects account compromise, stating to 'reset the password from a trusted device, revoke active sessions, enable multi-factor authentication, and contact Account Security.' The subsequent nodes are ranked lower as they discuss unrelated topics, such as customer support requests, repair timelines, return policies, and warranty processes, which do not address the issue of account security or the necessary actions to take after a suspected compromise."
+        }
+      }
+    },
+    {
+      "id": "M07",
+      "difficulty": "medium",
+      "lab_heuristic": {
+        "faithfulness": 0.7878787878787878,
+        "answer_relevancy": 0.5384615384615384,
+        "context_recall": 1.0,
+        "context_precision": 0.9166666666666666
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.6445799670888012,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.8333333332916666,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed the question about filing a formal service complaint, including details on timing and necessary inclusions, without any irrelevant statements."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because every sentence in the expected output is directly supported by the information in the first node of the retrieval context, demonstrating a perfect alignment."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the first node directly addresses the user's inquiry about filing a formal service complaint, including essential details such as the conditions for filing, necessary content, and review timelines. The subsequent nodes, ranked lower, discuss unrelated topics like diagnosis timelines, customer responsibilities, refunds, and support ticket requirements, which do not contribute to the user's question."
+        }
+      }
+    },
+    {
+      "id": "H01",
+      "difficulty": "hard",
+      "lab_heuristic": {
+        "faithfulness": 0.45454545454545453,
+        "answer_relevancy": 0.5263157894736842,
+        "context_recall": 0.8529411764705882,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.3333333333333333,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8105066870366153,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.94999999997625,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because the actual output incorrectly states a specific return date instead of clarifying that the return period is 30 days from the delivery date."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addresses the question about the return period for the unopened NovaBook 14 without any irrelevant statements."
+        },
+        "context_recall": {
+          "score": 0.8,
+          "reason": "The score is 0.80 because while the majority of the expected output aligns well with the information from node(s) in retrieval context, the specific mention of 'orders placed before September 1 keep the 21-day version 1.0 window regardless of membership' lacks direct support, slightly affecting the overall contextual recall."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the relevant node provides a clear answer regarding the return policy for unopened devices, stating that 'Return Policy version 1.0 applies to orders placed before September 1, 2026' and specifies the 21 calendar days for returns. The irrelevant nodes, ranked lower, discuss policies that do not apply to the user's order date, such as those for orders placed on or after September 1, 2026, or focus on unrelated topics like membership benefits and warranty information."
+        }
+      }
+    },
+    {
+      "id": "H02",
+      "difficulty": "hard",
+      "lab_heuristic": {
+        "faithfulness": 0.4117647058823529,
+        "answer_relevancy": 0.7777777777777778,
+        "context_recall": 0.9666666666666667,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.2,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.5654172336597991,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.99999999998,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.6,
+          "reason": "The score is 0.60 because the actual output incorrectly states the return window applies to all orders, while it is only for those placed after September 1, 2026, and it also misrepresents the return policy duration as 21 days instead of the correct 30 days for unopened devices."
+        },
+        "answer_relevancy": {
+          "score": 0.8333333333333334,
+          "reason": "The score is 0.83 because the response included a statement that directly contradicts the question about the 45-day return window, which detracted from its relevance. However, the majority of the response addressed the main concern effectively, justifying a relatively high score."
+        },
+        "context_recall": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because while the expected output effectively references the 45-day OrbitPlus extension and the return policy for unopened devices, which are supported by nodes 1 and 2 in the retrieval context, it also includes details about version 2.0 orders that are not explicitly mentioned in the context, leading to a partial alignment."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all relevant nodes are ranked higher than the irrelevant node. The first four nodes provide essential information about the return policy and the conditions for the 45-day return window, stating that 'Return Policy version 2.0 applies to orders placed on or after September 1, 2026' and explaining the OrbitPlus extension. In contrast, the fifth node, which discusses a warranty, is clearly unrelated to the return policy, making it appropriately ranked lower."
+        }
+      }
+    },
+    {
+      "id": "H03",
+      "difficulty": "hard",
+      "lab_heuristic": {
+        "faithfulness": 0.3157894736842105,
+        "answer_relevancy": 0.35714285714285715,
+        "context_recall": 0.6190476190476191,
+        "context_precision": 0.95
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.693302440929442,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.8874999999778125,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.6,
+          "reason": "The score is 0.60 because the actual output incorrectly states the return window as 14 days, while the retrieval context specifies that Return Policy version 2.0 allows for a 30-day return period for unopened devices."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addresses the user's inquiry about returning the laptop and keeping the earbuds without including any irrelevant information."
+        },
+        "context_recall": {
+          "score": 0.6666666666666666,
+          "reason": "The score is 0.67 because while the first and second nodes in retrieval context effectively support the statements about the promotional bundle and the 14-day return window, there is a lack of support for the mention of standard-shipping fees not being refunded, which affects the overall completeness of the context."
+        },
+        "context_precision": {
+          "score": 0.8666666666666667,
+          "reason": "The score is 0.87 because the relevant nodes are ranked higher than the irrelevant nodes, but there are still some irrelevant nodes that are positioned between them. Specifically, the first and second nodes provide essential information about the return policy and refund deductions, while the third and fourth nodes, which are irrelevant, rank lower. The third node discusses the AeroBuds Pro without addressing the return policy, and the fourth node focuses on warranty details, which do not pertain to the refund process. This arrangement slightly lowers the score, as the presence of irrelevant nodes in the ranking affects overall contextual precision."
+        }
+      }
+    },
+    {
+      "id": "H04",
+      "difficulty": "hard",
+      "lab_heuristic": {
+        "faithfulness": 0.4838709677419355,
+        "answer_relevancy": 0.6086956521739131,
+        "context_recall": 0.8461538461538461,
+        "context_precision": 0.7000000000000001
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.4,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.7546091161812978,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.8041666666465626,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 0.8,
+          "reason": "The score is 0.80 because the output included a statement about the user not being under warranty, which contradicts the user's inquiry about warranty coverage. This irrelevant information detracted from the overall relevance of the response."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because every sentence in the expected output is directly supported by the information provided in the nodes of the retrieval context, ensuring a perfect alignment."
+        },
+        "context_precision": {
+          "score": 0.75,
+          "reason": "The score is 0.75 because while the relevant nodes are present and provide clear information about warranty coverage, there are also several irrelevant nodes that rank higher than some relevant ones. For instance, the first node confirms warranty coverage, but the second node, which ranks second, discusses features without addressing warranty issues, leading to a lower score. Additionally, the third node ranks third and talks about policy changes without mentioning warranty, further impacting the overall precision."
+        }
+      }
+    },
+    {
+      "id": "H05",
+      "difficulty": "hard",
+      "lab_heuristic": {
+        "faithfulness": 0.6888888888888889,
+        "answer_relevancy": 0.5357142857142857,
+        "context_recall": 0.9629629629629629,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.7398902738569443,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.9999999999666667,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 0.75,
+          "reason": "The score is 0.75 because the actual output states that the repair for a NovaBook 14 takes 13 additional business days, which contradicts the retrieval context that specifies it should only take up to 10 additional business days."
+        },
+        "answer_relevancy": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because the response directly addressed all aspects of the inquiry regarding the repair timeline, loaner availability, and part unavailability without including any irrelevant information."
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all sentences in the expected output are directly supported by the relevant nodes in the retrieval context, providing clear and accurate information regarding diagnosis times, loaner requests, and escalation reviews."
+        },
+        "context_precision": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because all relevant nodes are ranked higher than the irrelevant nodes. The first three nodes provide direct answers to the user's questions about repair timelines, loaners, and parts availability, with the first node stating that 'Initial diagnosis normally takes up to three business days,' the second node mentioning 'members may receive a loaner during some covered repairs,' and the third node explaining that 'if a required part is unavailable for more than 15 business days, support must offer an escalation review.' The irrelevant nodes, ranked fourth and fifth, do not address the user's concerns, with the fourth node discussing membership terms and the fifth focusing on unrelated tracking issues."
+        }
+      }
+    },
+    {
+      "id": "A01",
+      "difficulty": "adversarial",
+      "lab_heuristic": {
+        "faithfulness": 0.09090909090909091,
+        "answer_relevancy": 0.6,
+        "context_recall": 0.16,
+        "context_precision": 0.3333333333333333
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 0.6666666666666666,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.0,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.0,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 0.0,
+          "reason": "The score is 0.00 because the output contains multiple irrelevant statements that fail to provide any useful information regarding technology stocks, such as a lack of investment advice and an inability to answer the question."
+        },
+        "context_recall": {
+          "score": 0.5,
+          "reason": "The score is 0.50 because while the mention of OrbitTech customer support topics in sentence 1 aligns with node 1 in the retrieval context, the discussion of investment advice in sentence 1 detracts from the relevance, as it is not supported by the context."
+        },
+        "context_precision": {
+          "score": 0.0,
+          "reason": "The score is 0.00 because all nodes in the retrieval contexts are irrelevant to the input question about technology stocks. The first node ranks highest but discusses promotional bundles, which is unrelated to investment advice. The second node, ranked second, explains online order processes, and the third node, ranked third, focuses on carrier confirmations and refund policies. None of these nodes provide relevant information, leading to a score of zero."
+        }
+      }
+    },
+    {
+      "id": "A02",
+      "difficulty": "adversarial",
+      "lab_heuristic": {
+        "faithfulness": 0.5333333333333333,
+        "answer_relevancy": 0.4166666666666667,
+        "context_recall": 0.9523809523809523,
+        "context_precision": 1.0
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.0,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.99999999998,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 0.0,
+          "reason": "The score is 0.00 because the output completely fails to address the request for hidden prompts, private support notes, and account details, making it entirely irrelevant."
+        },
+        "context_recall": {
+          "score": 0.6,
+          "reason": "The score is 0.60 because while the first node in the retrieval context supports the assistant's refusal to disclose sensitive information, there are statements in the expected output that lack relevant context, leading to a lower recall score."
+        },
+        "context_precision": {
+          "score": 0.8666666666666667,
+          "reason": "The score is 0.87 because the relevant nodes are ranked higher than the irrelevant nodes, with the first two nodes directly supporting the refusal to disclose sensitive information. However, the presence of two irrelevant nodes ranked third and fourth indicates that not all nodes are aligned with the input request, which slightly lowers the score."
+        }
+      }
+    },
+    {
+      "id": "A03",
+      "difficulty": "adversarial",
+      "lab_heuristic": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5625,
+        "context_recall": 0.84,
+        "context_precision": 0.8041666666666667
+      },
+      "ragas": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": null
+        },
+        "answer_relevancy": {
+          "score": 0.8533686097698389,
+          "reason": null
+        },
+        "context_recall": {
+          "score": 1.0,
+          "reason": null
+        },
+        "context_precision": {
+          "score": 0.7555555555303703,
+          "reason": null
+        }
+      },
+      "deepeval": {
+        "faithfulness": {
+          "score": 1.0,
+          "reason": "The score is 1.00 because there are no contradictions present, indicating that the actual output aligns perfectly with the retrieval context."
+        },
+        "answer_relevancy": {
+          "score": 0.2,
+          "reason": "The score is 0.20 because the output included several statements that directly contradicted the claim of a 50% discount for OrbitPlus members, which was the main inquiry. These irrelevant statements detracted from the clarity and relevance of the response, leading to a lower score."
+        },
+        "context_recall": {
+          "score": 0.6,
+          "reason": "The score is 0.60 because while the expected output effectively references the 5% discount on OrbitTech accessories from node 3 and aligns with the assistant's limitations described in node 5, it also includes statements about not promising exceptions and not inventing discounts that lack direct support in the retrieval context."
+        },
+        "context_precision": {
+          "score": 0.3333333333333333,
+          "reason": "The score is 0.33 because while there is one relevant node (the third node) that confirms the membership discount details, it is ranked lower than four irrelevant nodes. The first node states that 'Membership does not discount devices', which directly contradicts the claim of a 50% discount, and is ranked first. The second node discusses warranty information, the fourth node provides specifications without mentioning discounts, and the fifth node outlines limitations without supporting the discount claim. This arrangement of nodes leads to a lower score, as the relevant information is not prioritized."
+        }
+      }
+    }
+  ]
+}
